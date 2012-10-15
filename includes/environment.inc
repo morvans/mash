@@ -21,7 +21,7 @@ define('MASH_TABLE_VERSION', '1.1.3');
 define('MASH_PEAR_BASE_URL', 'http://download.pear.php.net/package/');
 
 /**
- * Log PHP errors to the Drush log. This is in effect until Magento's error
+ * Log PHP errors to the Mash log. This is in effect until Magento's error
  * handler takes over.
  */
 function mash_error_handler($errno, $message, $filename, $line, $context) {
@@ -124,7 +124,7 @@ function mash_environment_lib() {
   // We tell mash_mkdir that $lib is not required, because otherwise it
   // will throw an error if the folder exists but is not writable.  It
   // is okay with us if the $lib dir is not writable by the current
-  // user, as it may have already been set up by the user who installed Drush.
+  // user, as it may have already been set up by the user who installed Mash.
   mash_mkdir($lib, FALSE);
   if (!is_dir($lib)) {
     return FALSE;
@@ -140,7 +140,7 @@ function mash_environment_table_lib() {
     // If it is not already present, download Console Table.
     if (!mash_file_not_empty($tablefile)) {
       // Attempt to remove the old Console Table file, from the legacy location.
-      // TODO: Remove this (and associated .git.ignore) in Drush 6.x.
+      // TODO: Remove this (and associated .git.ignore) in Mash 6.x.
       $tablefile_legacy = MASH_BASE_PATH . '/includes/table.inc';
       if (mash_file_not_empty($tablefile_legacy)) {
         mash_op('unlink', $tablefile_legacy);
@@ -152,7 +152,7 @@ function mash_environment_table_lib() {
         mash_op('unlink', $lib . '/package.xml');
       }
       if (!mash_file_not_empty($tablefile)) {
-        return mash_bootstrap_error('MASH_TABLES_LIB_NOT_FOUND', dt("Drush needs a copy of the PEAR Console_Table library in order to function, and the attempt to download this file automatically failed. To continue you will need to download the !version package from http://pear.php.net/package/Console_Table, extract it into !lib directory, such that Table.php exists at !tablefile.", array('!version' => MASH_TABLE_VERSION, '!tablefile' => $tablefile, '!lib' => $lib)));
+        return mash_bootstrap_error('MASH_TABLES_LIB_NOT_FOUND', dt("Mash needs a copy of the PEAR Console_Table library in order to function, and the attempt to download this file automatically failed. To continue you will need to download the !version package from http://pear.php.net/package/Console_Table, extract it into !lib directory, such that Table.php exists at !tablefile.", array('!version' => MASH_TABLE_VERSION, '!tablefile' => $tablefile, '!lib' => $lib)));
       }
     }
   }
@@ -221,7 +221,7 @@ function _mash_shift_path_up($path) {
  * Like Magento conf_path, but searching from beneath.
  * Allows proper site uri detection in site sub-directories.
  *
- * Essentially looks for a settings.php file.  Drush uses this
+ * Essentially looks for a settings.php file.  Mash uses this
  * function to find a usable site based on the user's current
  * working directory.
  *
@@ -276,10 +276,10 @@ function mash_site_path($path = NULL) {
  * This is a copy of Magento's conf_path function, taken from D7 and
  * adjusted slightly to search from the selected Magento Root.
  *
- * Drush uses this routine to find a usable site based on a URI
+ * Mash uses this routine to find a usable site based on a URI
  * passed in via a site alias record or the --uri commandline option.
  *
- * Drush uses Magento itself (specifically, the Magento conf_path function)
+ * Mash uses Magento itself (specifically, the Magento conf_path function)
  * to bootstrap the site itself.  If the implementation of conf_path
  * changes, the site should still bootstrap correctly; the only consequence
  * of this routine not working is that mash configuration files
@@ -767,7 +767,7 @@ function mash_is_local_host($host) {
  * Return the user's home directory.
  */
 function mash_server_home() {
-  // Cannot use $_SERVER superglobal since that's empty during Drush_UnitTestCase
+  // Cannot use $_SERVER superglobal since that's empty during Mash_UnitTestCase
   // getenv('HOME') isn't set on windows and generates a Notice.
   $home = getenv('HOME');
   if (empty($home)) {
@@ -815,7 +815,7 @@ function mash_directory_cache($subdir = '') {
       }
     }
   }
-  return mash_set_error('MASH_NO_WRITABLE_CACHE', dt('Drush must have a writable cache directory; please insure that one of the following locations is writable: @locations',
+  return mash_set_error('MASH_NO_WRITABLE_CACHE', dt('Mash must have a writable cache directory; please insure that one of the following locations is writable: @locations',
     array('@locations' => implode(',', array_keys($cache_locations)))));
 }
 

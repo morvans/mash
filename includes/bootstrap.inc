@@ -3,7 +3,7 @@
 /**
  * @file
  *
- * Drush bootstrapping code.
+ * Mash bootstrapping code.
  *
  * Functions here are used to bootstrap mash and then maybe Magento to
  * a level sufficient so that we can run commands. This is also where
@@ -12,9 +12,9 @@
  */
 
 /**
- * @name Drush bootstrap phases
+ * @name Mash bootstrap phases
  * @{
- * Sequential Drush bootstrapping phases.
+ * Sequential Mash bootstrapping phases.
  */
 
 /**
@@ -35,9 +35,9 @@ define('MASH_BOOTSTRAP_NONE', -1);
 define('MASH_BOOTSTRAP_MAX', -2);
 
 /**
- * Only bootstrap Drush, without any Magento specific code.
+ * Only bootstrap Mash, without any Magento specific code.
  *
- * Any code that operates on the Drush installation, and not specifically
+ * Any code that operates on the Mash installation, and not specifically
  * any Magento directory, should bootstrap to this phase.
  */
 define('MASH_BOOTSTRAP_MASH', 0);
@@ -55,7 +55,7 @@ define('MASH_BOOTSTRAP_MAGENTO_ROOT',  1);
  * Set up a Magento site directory and the correct environment variables to
  * allow Magento to find the configuration file.
  *
- * If no site is specified with the -l / --uri options, Drush will assume the
+ * If no site is specified with the -l / --uri options, Mash will assume the
  * site is 'default', which mimics Magento's behaviour.
  *
  * If you want to avoid this behaviour, it is recommended that you use the
@@ -149,11 +149,11 @@ function _mash_bootstrap_phases($function_names = FALSE, $init_phases_only = FAL
 }
 
 /**
- * @} End of Drush bootstrap phases.
+ * @} End of Mash bootstrap phases.
  */
 
 /**
- * Bootstrap Drush to the desired phase.
+ * Bootstrap Mash to the desired phase.
  *
  * This function will sequentially bootstrap each
  * lower phase up to the phase that has been requested.
@@ -161,7 +161,7 @@ function _mash_bootstrap_phases($function_names = FALSE, $init_phases_only = FAL
  * @param phase
  *   The bootstrap phase to bootstrap to.
  *   Any of the following constants :
- *     MASH_BOOTSTRAP_MASH                = Only Drush.
+ *     MASH_BOOTSTRAP_MASH                = Only Mash.
  *     MASH_BOOTSTRAP_MAGENTO_ROOT          = Find a valid Magento root.
  *     MASH_BOOTSTRAP_MAGENTO_SITE          = Find a valid Magento site.
  *     MASH_BOOTSTRAP_MAGENTO_CONFIGURATION = Load the site's settings.
@@ -236,7 +236,7 @@ function mash_has_boostrapped($phase) {
  * @param phase
  *   The bootstrap phase to validate to.
  *   Any of the following constants :
- *     MASH_BOOTSTRAP_MASH                = Only Drush.
+ *     MASH_BOOTSTRAP_MASH                = Only Mash.
  *     MASH_BOOTSTRAP_MAGENTO_ROOT          = Find a valid Magento root.
  *     MASH_BOOTSTRAP_MAGENTO_SITE          = Find a valid Magento site.
  *     MASH_BOOTSTRAP_MAGENTO_CONFIGURATION = Load the site's settings.
@@ -386,7 +386,7 @@ function mash_bootstrap_error($code, $message = null) {
 }
 
 /**
- * Validate that Drush is running in a suitable environment.
+ * Validate that Mash is running in a suitable environment.
  */
 function _mash_bootstrap_mash_validate() {
   // @todo _mash_environment_php_ini_checks() always returns TRUE.
@@ -407,11 +407,11 @@ function _mash_bootstrap_mash_validate() {
 }
 
 /**
- * Initial Drush bootstrap phase.
+ * Initial Mash bootstrap phase.
  *
- * During the initialization of Drush,
+ * During the initialization of Mash,
  * this is the first step where all we are
- * aware of is Drush itself.
+ * aware of is Mash itself.
  *
  * In this step we will register the shutdown function,
  * parse the command line arguments and store them in their
@@ -439,7 +439,7 @@ function _mash_bootstrap_mash() {
     exec('stty size 2>&1', $columns_output, $columns_status);
     if (!$columns_status) $columns = preg_replace('/\d+\s(\d+)/', '$1', $columns_output[0], -1, $columns_count);
 
-    // If stty fails and Drush us running on Windows are we trying with mode con.
+    // If stty fails and Mash us running on Windows are we trying with mode con.
     if (($columns_status || !$columns_count) && mash_is_windows()) {
       $columns_output = array();
       exec('mode con', $columns_output, $columns_status);
@@ -584,7 +584,7 @@ function _mash_bootstrap_select_magento_site() {
 }
 
 /**
- * Sets up basic environment that controls where Drush looks for files on a
+ * Sets up basic environment that controls where Mash looks for files on a
  * system-wide basis. Important to call for "early" functions that need to
  * work with unit tests.
  */
@@ -600,8 +600,8 @@ function _mash_bootstrap_base_environment() {
     mash_set_context('DOC_PREFIX', mash_get_context('SHARE_PREFIX', '/usr') . '/share/doc/mash');
   }
   $alias_path =& mash_get_context('ALIAS_PATH');
-  $default_prefix_configuration = mash_is_windows() ? getenv('ALLUSERSPROFILE') . '/Drush' : '';
-  $default_prefix_commandfile = mash_is_windows() ? getenv('ALLUSERSPROFILE') . '/Drush' : '/usr';
+  $default_prefix_configuration = mash_is_windows() ? getenv('ALLUSERSPROFILE') . '/Mash' : '';
+  $default_prefix_commandfile = mash_is_windows() ? getenv('ALLUSERSPROFILE') . '/Mash' : '/usr';
   $site_wide_configuration_dir = mash_get_context('ETC_PREFIX', $default_prefix_configuration) . '/etc/mash';
   $site_wide_commandfile_dir = mash_get_context('SHARE_PREFIX', $default_prefix_commandfile) . '/share/mash/commands';
   $alias_path[] = $site_wide_configuration_dir;
@@ -661,7 +661,7 @@ function _mash_bootstrap_magento_root_validate() {
 }
 
 /**
- * Bootstrap Drush with a valid Magento Directory.
+ * Bootstrap Mash with a valid Magento Directory.
  *
  * In this function, the pwd will be moved to the root
  * of the Magento installation.
@@ -828,7 +828,7 @@ function _mash_bootstrap_magento_configuration() {
 //  }
 
 //  // Force Magento6 not to store queries since we are not outputting them.
-//  // Don't run poormanscron during Drush request (D7+).
+//  // Don't run poormanscron during Mash request (D7+).
 //  $override = array(
 //    'dev_query' => FALSE,
 //    'cron_safe_threshold' => 0,
@@ -1067,7 +1067,7 @@ function mash_shutdown() {
     // this generally means somewhere in the code a call to exit(),
     // was made. We catch this, so that we can trigger an error in
     // those cases.
-    mash_set_error("MASH_NOT_COMPLETED", dt("Drush command terminated abnormally due to an unrecoverable error.!message", array('!message' => $php_error_message)));
+    mash_set_error("MASH_NOT_COMPLETED", dt("Mash command terminated abnormally due to an unrecoverable error.!message", array('!message' => $php_error_message)));
     // Attempt to give the user some advice about how to fix the problem
     _mash_postmortem();
   }

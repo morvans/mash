@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * The Drush context API implementation.
+ * The Mash context API implementation.
  *
  * This API acts as a storage mechanism for all options, arguments and
  * configuration settings that are loaded into mash.
@@ -17,7 +17,7 @@
  * This API defines several contexts that are used by default.
  *
  * Argument contexts :
- *   These contexts are used by Drush to store information on the command.
+ *   These contexts are used by Mash to store information on the command.
  *   They have their own access functions in the forms of
  *   mash_set_arguments(), mash_get_arguments(), mash_set_command(),
  *   mash_get_command().
@@ -35,7 +35,7 @@
  *   mash_set_option() functions.  See mash_context_names() for a description
  *   of all of the contexts.
  *
- *   Drush commands may also choose to save settings for a specific context to
+ *   Mash commands may also choose to save settings for a specific context to
  *   the matching configuration file through the mash_save_config() function.
  */
 
@@ -364,7 +364,7 @@ function mash_get_arguments() {
 /**
  * Set the command being executed.
  *
- * Drush_dispatch will set the correct command based on it's
+ * Mash_dispatch will set the correct command based on it's
  * matching of the script arguments retrieved from mash_get_arguments
  * to the implemented commands specified by mash_get_commands.
  *
@@ -638,7 +638,7 @@ function mash_save_config($context) {
 
     $fp = fopen($filename, "w+");
     if (!$fp) {
-      return mash_set_error('MASH_PERM_ERROR', dt('Drushrc (!filename) could not be written', array('!filename' => $filename)));
+      return mash_set_error('MASH_PERM_ERROR', dt('Mashrc (!filename) could not be written', array('!filename' => $filename)));
     }
     else {
       fwrite($fp, "<?php\n");
@@ -649,7 +649,7 @@ function mash_save_config($context) {
       }
       fwrite($fp, "\n");
       fclose($fp);
-      mash_log(dt('Drushrc file (!filename) was written successfully', array('!filename' => $filename)));
+      mash_log(dt('Mashrc file (!filename) was written successfully', array('!filename' => $filename)));
       return TRUE;
     }
 

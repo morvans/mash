@@ -14,7 +14,7 @@ mash_bootstrap_prepare();
 exit(mash_main());
 
 /**
- * The main Drush function.
+ * The main Mash function.
  *
  * - Runs "early" option code, if set (see global options).
  * - Parses the command line arguments, configuration files and environment.

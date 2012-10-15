@@ -30,7 +30,7 @@ function mash_invoke($command, $arguments = array()) {
   $commands = mash_get_commands();
   if (array_key_exists($command, $commands)) {
     $command = $commands[$command];
-    // Drush overloads the 'arguments' element, which contains the
+    // Mash overloads the 'arguments' element, which contains the
     // help string for the allowed arguments for the command when
     // fetched, and is fixed up by _mash_prepare_command to contain
     // the actual commandline arguments during dispatching.
@@ -91,7 +91,7 @@ function mash_invoke($command, $arguments = array()) {
  *   @see mash_backend_get_result()
  *
  * Do not change the signature of this function!  mash_invoke_process
- * is one of the key Drush APIs.  See http://magento.org/node/1152908
+ * is one of the key Mash APIs.  See http://magento.org/node/1152908
  */
 function mash_invoke_process($site_alias_record, $command_name, $commandline_args = array(), $commandline_options = array(), $backend_options = TRUE) {
   if (is_array($site_alias_record) && array_key_exists('site-list', $site_alias_record)) {
@@ -211,7 +211,7 @@ function mash_command() {
 }
 
 /**
- * Invoke Drush API calls, including all hooks.
+ * Invoke Mash API calls, including all hooks.
  *
  * This is an internal function; it is called from mash_dispatch via
  * mash_command, but only if the command does not specify a 'callback'
@@ -1147,7 +1147,7 @@ function mash_parse_command() {
  * this function.
  */
 function _mash_prepare_command(&$command, $arguments = array()) {
-  // Drush overloads $command['arguments']; save the argument description
+  // Mash overloads $command['arguments']; save the argument description
   if (!isset($command['argument-description'])) {
     $command['argument-description'] = $command['arguments'];
   }
@@ -1253,7 +1253,7 @@ function mash_is_command($command) {
  * Commands implementing hook_mash_load() in MODULE.mash.load.inc with
  * a return value FALSE will not be loaded.
  *
- * A Drush command file is a file that matches "*.mash.inc".
+ * A Mash command file is a file that matches "*.mash.inc".
  *
  * @see mash_scan_directory()
  *
@@ -1310,7 +1310,7 @@ function _mash_find_commandfiles($phase, $phase_max = FALSE) {
       // or not.  If we are, however, going to continue on to bootstrap
       // all the way to MASH_BOOTSTRAP_MAGENTO_FULL, then we will
       // instead wait for that phase, which will more carefully add
-      // only those Drush command files that are associated with
+      // only those Mash command files that are associated with
       // enabled modules.
 //      if ($phase_max < MASH_BOOTSTRAP_MAGENTO_FULL) {
 //        $searchpath[] = conf_path() . '/modules';
@@ -1323,7 +1323,7 @@ function _mash_find_commandfiles($phase, $phase_max = FALSE) {
 //        // see if we have 'install_profile' available there.
 //        $searchpath[] = "profiles";
 //      }
-//      // Planning ahead for Drush scripts in core Magento.
+//      // Planning ahead for Mash scripts in core Magento.
 //      if (mash_magento_major_version() >=8) {
 //        $searchpath[] = 'modules';
 //      }
@@ -1662,7 +1662,7 @@ function mash_enforce_requirement_magento_dependencies(&$command) {
 
 /**
  * Check that a command has its declared mash dependencies available or have no
- * dependencies. Drush dependencies are helpful when a command is invoking
+ * dependencies. Mash dependencies are helpful when a command is invoking
  * another command, or implementing its API.
  *
  * @param $command

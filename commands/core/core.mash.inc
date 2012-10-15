@@ -50,11 +50,11 @@ function core_mash_command() {
     'bootstrap' => MASH_BOOTSTRAP_MASH, // No bootstrap.
     'options' => array(
       'pipe' => 'Print just the version number, and nothing else.',
-      'self-update' => 'Check for pending updates to Drush itself. Set to 0 to disable.',
+      'self-update' => 'Check for pending updates to Mash itself. Set to 0 to disable.',
     ),
   );
 //  $items['self-update'] = array(
-//    'description' => 'Check to see if there is a newer Drush release available.',
+//    'description' => 'Check to see if there is a newer Mash release available.',
 //    'bootstrap' => MASH_BOOTSTRAP_MASH, // No bootstrap.
 //    'aliases' => array('selfupdate'),
 //  );
@@ -417,24 +417,24 @@ function core_mash_help($section) {
     case 'meta:core:title':
       return dt("Core mash commands");
     case 'mash:help':
-      return dt("Drush provides an extensive help system that describes both mash commands and topics of general interest.  Use `mash help --filter` to present a list of command categories to view, and `mash topic` for a list of topics that go more in-depth on how to use and extend mash.");
+      return dt("Mash provides an extensive help system that describes both mash commands and topics of general interest.  Use `mash help --filter` to present a list of command categories to view, and `mash topic` for a list of topics that go more in-depth on how to use and extend mash.");
     case 'mash:php-script':
-      return dt("Runs the given php script(s) after a full Magento bootstrap. A useful alternative to eval command when your php is lengthy or you can't be bothered to figure out bash quoting. If you plan to share a script with others, consider making a full mash command instead, since that's more self-documenting.  Drush provides commandline options to the script via mash_get_option('option-name'), and commandline arguments can be accessed either via mash_get_arguments(), which returns all arguments in an array, or mash_shift(), which removes the next argument from the list and returns it.");
+      return dt("Runs the given php script(s) after a full Magento bootstrap. A useful alternative to eval command when your php is lengthy or you can't be bothered to figure out bash quoting. If you plan to share a script with others, consider making a full mash command instead, since that's more self-documenting.  Mash provides commandline options to the script via mash_get_option('option-name'), and commandline arguments can be accessed either via mash_get_arguments(), which returns all arguments in an array, or mash_shift(), which removes the next argument from the list and returns it.");
     case 'mash:rsync':
       return dt("Sync the entire magento directory or a subdirectory to a <destination> using ssh. Excludes reserved files and directories for supported VCSs. Useful for pushing copies of your tree to a staging server, or retrieving a files directory from a remote site. Relative paths start from the Magento root directory if a site alias is used; otherwise they start from the current working directory.");
     case 'mash:magento-directory':
       return dt("Return the filesystem path for modules/themes and other key folders.");
     case 'error:MASH_MAGENTO_DB_ERROR':
-      $message = dt("Drush was not able to start (bootstrap) the Magento database.\n");
-      $message .= dt("Hint: This may occur when Drush is trying to:\n");
+      $message = dt("Mash was not able to start (bootstrap) the Magento database.\n");
+      $message .= dt("Hint: This may occur when Mash is trying to:\n");
       $message .= dt(" * bootstrap a site that has not been installed or does not have a configured database. In this case you can select another site with a working database setup by specifying the URI to use with the --uri parameter on the command line. See `mash topic docs-aliases` for details.\n");
       $message .= dt(" * connect the database through a socket. The socket file may be wrong or the php-cli may have no access to it in a jailed shell. See http://magento.org/node/1428638 for details.\n");
-      $message .= dt("\nDrush was attempting to connect to: \n!credentials\n", array('!credentials' => _core_site_credentials()));
+      $message .= dt("\nMash was attempting to connect to: \n!credentials\n", array('!credentials' => _core_site_credentials()));
       return $message;
     case 'error:MASH_MAGENTO_BOOTSTRAP_ERROR':
-      $message = dt("Drush was not able to start (bootstrap) Magento.\n");
+      $message = dt("Mash was not able to start (bootstrap) Magento.\n");
       $message .= dt("Hint: This error can only occur once the database connection has already been successfully initiated, therefore this error generally points to a site configuration issue, and not a problem connecting to the database.\n");
-      $message .= dt("\nDrush was attempting to connect to: \n!credentials\n", array('!credentials' => _core_site_credentials()));
+      $message .= dt("\nMash was attempting to connect to: \n!credentials\n", array('!credentials' => _core_site_credentials()));
       return $message;
       break;
   }
@@ -548,21 +548,21 @@ function _core_site_status_table($project = '', $full = FALSE) {
         }
       }
     }
-    $status_table['Default theme'] = mash_theme_get_default();
-    $status_table['Administration theme'] = mash_theme_get_admin();
+//    $status_table['Default theme'] = mash_theme_get_default();
+//    $status_table['Administration theme'] = mash_theme_get_admin();
   }
   if ($php_ini_files = _mash_core_config_php_ini_files()) {
     $status_table['PHP configuration'] = implode(' ', $php_ini_files);
   }
-  $status_table['Drush version'] = MASH_VERSION;
-  $status_table['Drush configuration'] = implode(' ', mash_get_context_options('context-path', TRUE));
+  $status_table['Mash version'] = MASH_VERSION;
+  $status_table['Mash configuration'] = implode(' ', mash_get_context_options('context-path', TRUE));
   $alias_files = _mash_sitealias_find_alias_files();
   if (!empty($alias_files)) {
     if ($full || count($alias_files) < 24) {
-      $status_table['Drush alias files'] = implode(' ', $alias_files);
+      $status_table['Mash alias files'] = implode(' ', $alias_files);
     }
     else {
-      $status_table['Drush alias files'] = dt("There are !count alias files. Run with --full to see the full list.", array('!count' => count($alias_files)));
+      $status_table['Mash alias files'] = dt("There are !count alias files. Run with --full to see the full list.", array('!count' => count($alias_files)));
     }
   }
 
@@ -690,7 +690,7 @@ function mash_core_config_load($headers = TRUE) {
   mash_sitealias_load_all();
   if ($rcs = mash_get_context_options('context-path', TRUE)) {
     if ($headers) {
-      $rcs_header = array('mashrc' => '-- Drushrc --');
+      $rcs_header = array('mashrc' => '-- Mashrc --');
     }
   }
   if ($aliases = mash_get_context('mash-alias-files')) {

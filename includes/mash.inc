@@ -406,8 +406,8 @@ function mash_get_global_options($brief = FALSE) {
     $options['show-passwords']      = array('description' => "Show database passwords in commands that display connection information.");
     $options['show-invoke']         = array('description' => "Show all function names which could have been called for the current command. See mash_invoke().");
     $options['watchdog']            = array('description' => "Control logging of Magento's watchdog() to mash log. Recognized values are 'log', 'print', 'disabled'. Defaults to log. 'print' shows calls to admin but does not add them to the log.");
-    $options['cache-default-class'] = array('description' => "A cache backend class that implements DrushCacheInterface.");
-    $options['cache-class-<bin>']   = array('description' => "A cache backend class that implements DrushCacheInterface to use for a specific cache bin.");
+    $options['cache-default-class'] = array('description' => "A cache backend class that implements MashCacheInterface.");
+    $options['cache-class-<bin>']   = array('description' => "A cache backend class that implements MashCacheInterface to use for a specific cache bin.");
     $options['early']               = array('description' => "Include a file (with relative or full path) and call the mash_early_hook() function (where 'hook' is the filename). The function is called pre-bootstrap and offers an opportunity to alter the mash bootstrap environment or process (returning FALSE from the function will continue the bootstrap), or return output very rapidly (e.g. from caches). See includes/complete.inc for an example.");
     $options['alias-path']          = array('context' => 'ALIAS_PATH', 'local-context-only' => TRUE, 'merge-pathlist' => TRUE, 'propagate-cli-value' => TRUE, 'description' => "Specifies the list of paths where mash will search for alias files. Separate paths with ':'.");
     $options['backup-location']     = array('description' => "Specifies the directory where mash will store backups.");
@@ -1154,7 +1154,7 @@ function mash_tarball_extract($path, $destination = FALSE, $listing = FALSE) {
 function mash_lib_fetch($url) {
   $lib = mash_get_option('lib', MASH_BASE_PATH . '/lib');
   if (!is_writable($lib)) {
-    return mash_set_error('MASH_LIB_UNWRITABLE', dt("Drush needs to download a library from !url in order to function, and the attempt to download this file automatically failed because you do not have permission to write to the library directory !path. To continue you will need to manually download the package from !url, extract it, and copy the directory into your !path directory.", array('!path' => $lib, '!url' => $url)));
+    return mash_set_error('MASH_LIB_UNWRITABLE', dt("Mash needs to download a library from !url in order to function, and the attempt to download this file automatically failed because you do not have permission to write to the library directory !path. To continue you will need to manually download the package from !url, extract it, and copy the directory into your !path directory.", array('!path' => $lib, '!url' => $url)));
   }
 
   $destination = $lib . '/mash-library-' . mt_rand();
@@ -1281,10 +1281,10 @@ function mash_preflight_command_dispatch() {
 
 /**
  * Determine whether or not an argument should be removed from the
- * MASH_COMMAND_ARGS context.  This method is used when a Drush
+ * MASH_COMMAND_ARGS context.  This method is used when a Mash
  * command has set the 'strict-option-handling' flag indicating
  * that it will pass through all commandline arguments and any
- * additional options (not known to Drush) to some shell command.
+ * additional options (not known to Mash) to some shell command.
  *
  * Take as an example the following call to core-rsync:
  *
@@ -1292,14 +1292,14 @@ function mash_preflight_command_dispatch() {
  *
  * In this instance:
  *
- *   --yes is a global Drush option
+ *   --yes is a global Mash option
  *
  *   -v is an rsync option.  It will make rsync run in verbose mode,
- *     but will not make Drush run in verbose mode due to the fact that
+ *     but will not make Mash run in verbose mode due to the fact that
  *     core-rsync sets the 'strict-option-handling' flag.
  *
- *   --exclude-paths is a local Drush option.  It will be converted by
- *     Drush into --exclude='.git' and --exclude='.svn', and then passed
+ *   --exclude-paths is a local Mash option.  It will be converted by
+ *     Mash into --exclude='.git' and --exclude='.svn', and then passed
  *     on to the rsync command.
  *
  * The parameter $arg passed to this function is one of the elements
@@ -1749,9 +1749,9 @@ function mash_format_size($size, $langcode = NULL) {
  */
 
 /**
- * @defgroup errorhandling Managing errors that occur in the Drush framework.
+ * @defgroup errorhandling Managing errors that occur in the Mash framework.
  * @{
- * Functions that manage the current error status of the Drush framework.
+ * Functions that manage the current error status of the Mash framework.
  *
  * These functions operate by maintaining a static variable that is a equal to the constant MASH_FRAMEWORK_ERROR if an
  * error has occurred.

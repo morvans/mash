@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @file Drush backend API
+ * @file Mash backend API
  *
  * When a mash command is called with the --backend option,
  * it will buffer all output, and instead return a JSON encoded
  * string containing all relevant information on the command that
  * was just executed.
  *
- * Through this mechanism, it is possible for Drush commands to
+ * Through this mechanism, it is possible for Mash commands to
  * invoke each other.
  *
  * There are many cases where a command might wish to call another
@@ -42,7 +42,7 @@
  * GET parameters will be passed as options to the script.
  * POST parameters will be passed to the script as a JSON encoded associative array over STDIN.
  *
- * Because of this standard interface, Drush commands can also be executed on
+ * Because of this standard interface, Mash commands can also be executed on
  * external servers through SSH pipes, simply by prepending, 'ssh username@server.com'
  * in front of the command.
  *
@@ -214,7 +214,7 @@ function mash_backend_packet($packet, $data) {
 }
 
 /**
- * Parse output returned from a Drush command.
+ * Parse output returned from a Mash command.
  *
  * @param string
  *    The output of a mash command
@@ -267,7 +267,7 @@ function _mash_backend_integrate($data, $backend_options, $outputted) {
   // by mash_backend_packet (sender) mash_backend_parse_packets (reciever - us)
   // during incremental output.  We therefore do not need to call mash_set_error
   // or mash_log here.  The exception is if the sender is an older version of
-  // Drush (version 4.x) that does not send backend packets, then we will
+  // Mash (version 4.x) that does not send backend packets, then we will
   // not have processed the log entries yet, and must print them here.
   $received_packets = mash_get_context('MASH_RECEIVED_BACKEND_PACKETS', FALSE);
   if (is_array($data['log']) && $backend_options['log'] && (!$received_packets)) {

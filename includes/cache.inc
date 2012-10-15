@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file Drush cache API
+ * @file Mash cache API
  *
  * Provides a cache API for mash core and commands, forked from Magento 7.
  *
@@ -25,15 +25,15 @@ define('MASH_CACHE_TEMPORARY', -1);
 /**
  * Get the cache object for a cache bin.
  *
- * By default, this returns an instance of the DrushFileCache class.
- * Classes implementing DrushCacheInterface can register themselves both as a
+ * By default, this returns an instance of the MashFileCache class.
+ * Classes implementing MashCacheInterface can register themselves both as a
  * default implementation and for specific bins.
  *
- * @see DrushCacheInterface
+ * @see MashCacheInterface
  *
  * @param $bin
  *   The cache bin for which the cache object should be returned.
- * @return DrushCacheInterface
+ * @return MashCacheInterface
  *   The cache object associated with the specified bin.
  */
 function _mash_cache_get_object($bin) {
@@ -42,7 +42,7 @@ function _mash_cache_get_object($bin) {
   if (!isset($cache_objects[$bin])) {
     $class = mash_get_option('cache-class-' . $bin, NULL);
     if (!isset($class)) {
-      $class = mash_get_option('cache-default-class', 'DrushJSONCache');
+      $class = mash_get_option('cache-default-class', 'MashJSONCache');
     }
     $cache_objects[$bin] = new $class($bin);
   }
@@ -197,21 +197,21 @@ function mash_get_cid($prefix, $contexts = array(), $params = array()) {
  * Interface for cache implementations.
  *
  * All cache implementations have to implement this interface.
- * DrushDatabaseCache provides the default implementation, which can be
+ * MashDatabaseCache provides the default implementation, which can be
  * consulted as an example.
  *
- * To make Drush use your implementation for a certain cache bin, you have to
+ * To make Mash use your implementation for a certain cache bin, you have to
  * set a variable with the name of the cache bin as its key and the name of
  * your class as its value. For example, if your implementation of
- * DrushCacheInterface was called MyCustomCache, the following line in
- * mashrc.php would make Drush use it for the 'example' bin:
+ * MashCacheInterface was called MyCustomCache, the following line in
+ * mashrc.php would make Mash use it for the 'example' bin:
  * @code
  *  $options['cache-class-example'] = 'MyCustomCache;
  * @endcode
  *
  * Additionally, you can register your cache implementation to be used by
  * default for all cache bins by setting the option 'cache-default-class' to
- * the name of your implementation of the DrushCacheInterface, e.g.
+ * the name of your implementation of the MashCacheInterface, e.g.
  * @code
  *  $options['cache-default-class'] = 'MyCustomCache;
  * @endcode
@@ -219,7 +219,7 @@ function mash_get_cid($prefix, $contexts = array(), $params = array()) {
  * @see _mash_cache_get_object()
  * @see MagentoCacheInterface
  */
-interface DrushCacheInterface {
+interface MashCacheInterface {
   /**
    * Constructor.
    *
@@ -297,11 +297,11 @@ interface DrushCacheInterface {
 /**
  * Default cache implementation.
  *
- * This is Drush's default cache implementation. It uses plain text files
+ * This is Mash's default cache implementation. It uses plain text files
  * containing serialized php to store cached data. Each cache bin corresponds
  * to a directory by the same name.
  */
-class DrushFileCache implements DrushCacheInterface {
+class MashFileCache implements MashCacheInterface {
   const EXTENSION = '.cache';
   protected $bin;
 
@@ -421,7 +421,7 @@ class DrushFileCache implements DrushCacheInterface {
 /**
  * JSON cache storage backend.
  */
-class DrushJSONCache extends DrushFileCache {
+class MashJSONCache extends MashFileCache {
   const EXTENSION = '.json';
 
   function readFile($filename) {

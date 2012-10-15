@@ -348,7 +348,7 @@ function _mash_escapeshellarg_linux($arg) {
   $arg = preg_replace('/\'/', '\'\\\'\'', $arg);
 
   // Replace "\t", "\n", "\r", "\0", "\x0B" with a whitespace.
-  // Note that this replacement makes Drush's escapeshellarg work differently
+  // Note that this replacement makes Mash's escapeshellarg work differently
   // than the built-in escapeshellarg in PHP on Linux, as these characters
   // usually are NOT replaced. However, this was done deliberately to be more
   // conservative when running _mash_escapeshellarg_linux on Windows
@@ -385,7 +385,7 @@ function mash_shell_exec_output() {
 /**
  * Starts a background browser/tab for the current site or a specified URL.
  *
- * Uses a non-blocking proc_open call, so Drush execution will continue.
+ * Uses a non-blocking proc_open call, so Mash execution will continue.
  *
  * @param $uri
  *   Optional URI or site path to open in browser. If omitted, or if a site path
