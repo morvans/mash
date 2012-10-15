@@ -362,10 +362,7 @@ function core_mash_engine_type_info() {
 
 function core_mash_engine_magento() {
   $engines = array();
-  $engines['batch'] = array();
-  $engines['update'] = array();
-  $engines['environment'] = array();
-  $engines['site_install'] = array();
+  $engines['module'] = array();
   return $engines;
 }
 

@@ -1,6 +1,4 @@
 <?php
-include_once('helpers.php');
-include_once('clear_cache.php');
 
 
 class Module
@@ -21,14 +19,15 @@ class Module
   */
   public function createModule($module) {
     // Request missing parameters
-    if (!$module) {
-      $module = in('What is the fully qualified module name? Example: Package_Module.');
+    if (!isset($module) || empty($module)) {
+      throw new Exception('no name given');
+//      $module = in('What is the fully qualified module name? Example: Package_Module.');
     }
 
     // Validates parameters
     $components = explode('_', $module);
     if (count($components) < 2) {
-      error('Module name needs to be fully qualified. Example: Package_Module');
+      mash_set_error('CREATE_MODULE_ERROR','Module name needs to be fully qualified. Example: Package_Module');
       return;
     }
 
@@ -44,7 +43,7 @@ class Module
     $this->createModuleXml();
 
     // Any time XML has changed, need to clear cache
-    clearCache();
+    mash_cache_flush_all_magento_caches();
   }
 
   /**
@@ -70,6 +69,9 @@ class Module
 
     // Writes XML to app/etc/modules/<Package>_<Module>.xml
     $rootPath = getRootPath();
+
+    $rootPath = mash_get_context('MASH_SELECTED_MAGENTO_ROOT');
+
     $etcPath = $rootPath . 'app/etc/modules/';
     $fileHandler = fopen($etcPath . $this->packageModule . '.xml', 'w');
     fwrite($fileHandler, $formattedXml);
@@ -90,16 +92,93 @@ class Module
     $formattedXml = formatXml($xml);
 
     // Creates package and module directory if not already created
-    $localPath = getPath('local');
+    $localPath = mash_get_context('MASH_SELECTED_MAGENTO_ROOT').'/app/code/local/';
     $modulePath = $localPath . $this->package . '/' . $this->module . '/etc/';
-    if (!file_exists($modulePath)) {
-      mkdir($modulePath, 0755, TRUE);
-    }
+    mash_mkdir($modulePath);
 
     // Writes XML to app/code/local/<Package>/<Module>/etc/config.xml
     $fileHandler = fopen($modulePath . 'config.xml', 'w');
     fwrite($fileHandler, $formattedXml);
     fclose($fileHandler);
   }
+}
+
+
+
+
+
+/**
+ * Looks for the package path under local.
+ *
+ * @param $package - the package path name
+ * @return the path to the specified package directory under app/code/local or
+ *   FALSE if could not be found.
+ */
+function getPackagePath($package) {
+  $path = FALSE;
+
+  $localPath = getPath('local');
+  if ($localPath) {
+    $path = getPath($package, $localPath);
+  }
+
+  return $path;
+}
+
+/**
+ * Looks for the module path under package.
+ *
+ * @param $package - the package path name
+ * @param $module - the module path name
+ * @return the path to the specified module directory under app/code/local/<package>
+ *   or FALSE if could not be found.
+ */
+function getModulePath($package, $module) {
+
+  $localPath = mash_get_context('MASH_SELECTED_MAGENTO_ROOT').'/app/code/local/';
+
+
+  return $localPath.'/'.$package.'/'.$module;
+
+}
+
+/**
+ * Looks for the <package>/<module>/etc/config.xml file.
+ *
+ * @param $package - the package path name
+ * @param $module - the module path name
+ * @return the path to and including the config.xml file or FALSE if could not
+ *   be found.
+ */
+function getConfigPath($package, $module) {
+  $path = FALSE;
+
+  $modulePath = getModulePath($package, $module);
+  if ($modulePath) {
+    $configPath = $modulePath . 'etc/config.xml';
+    if (file_exists($configPath)) {
+      $path = $configPath;
+    }
+  }
+
+  return $path;
+}
+
+
+
+function formatXml($xml) {
+  // Loads the XSLT
+  $xslDoc = new DOMDocument();
+  $xslDoc->load(__DIR__ . "/format.xsl");
+
+  // Loads the XML
+  $xmlDoc = new DOMDocument();
+  $xmlDoc->loadXML($xml->asXML());
+
+  // Processes the XML
+  $proc = new XSLTProcessor();
+  $proc->importStylesheet($xslDoc);
+
+  return $proc->transformToXML($xmlDoc);
 }
 

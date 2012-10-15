@@ -5,15 +5,16 @@ function module_mash_command(){
 
   $items = array();
 
-   $items['create-module'] = array(
-     'bootstrap' => MASH_BOOTSTRAP_MAGENTO_FULL,
-     'description' => 'Create a new Magento module.',
-     'arguments' => array(
-       'name' => 'The name of the created module.',
-     ),
-     'callback' => 'mash_module_command_create',
-     'aliases' => array('cm'),
-   );
+  $items['create-module'] = array(
+    'bootstrap' => MASH_BOOTSTRAP_MAGENTO_FULL,
+    'description' => 'Create a blank module structure.',
+    'arguments' => array(
+      'name' => 'The name of the new module.',
+    ),
+    'engines' => array('magento'),
+    'callback' => 'mash_module_create_module',
+    'aliases' => array('mc'),
+  );
 
 
    return $items;
@@ -21,8 +22,15 @@ function module_mash_command(){
 
 }
 
-function mash_module_command_create(){
+function mash_module_create_module($name = NULL){
 
-  mash_print('Create module');
+  if(!isset($name) || empty($name)){
+    $name = mash_prompt('Module name', NULL, TRUE);
+
+  }
+
+  $module = new Module();
+  $module->createModule($name);
 
 }
+

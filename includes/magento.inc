@@ -20,12 +20,12 @@ function mash_magento_version($magento_root = NULL) {
   return $version;
 }
 
-function mash_magento_cache_clear_all() {
-  $prior = mash_get_context('MASH_AFFIRMATIVE');
-  mash_set_context('MASH_AFFIRMATIVE', TRUE);
-  mash_invoke('cache-clear', 'all');
-  mash_set_context('MASH_AFFIRMATIVE', $prior);
-}
+//function mash_magento_cache_clear_all() {
+//  $prior = mash_get_context('MASH_AFFIRMATIVE');
+//  mash_set_context('MASH_AFFIRMATIVE', TRUE);
+//  mash_invoke('cache-clear', 'all');
+//  mash_set_context('MASH_AFFIRMATIVE', $prior);
+//}
 
 /**
  * Returns the Magento major version number (6, 7, 8 ...)
