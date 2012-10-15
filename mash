@@ -1,43 +1,94 @@
-#!/usr/bin/php
-<?php
-include_once('lib/helpers.php');
-include_once('lib/clear_cache.php');
-include_once('lib/Block.php');
-include_once('lib/Module.php');
-include_once('lib/Route.php');
+#!/usr/bin/env sh
+# $Id$
+#
+# This script is a simple wrapper that will run Mash with the most appropriate
+# php executable it can find.
+#
+# Solaris users: Add /usr/xpg4/bin to the head of your PATH
+#
 
-// Must be ran inside a Magento project (subdirectories are okay)
-if (!getRootPath()) {
-  error('Mash needs to be ran inside a Magento project.');
-  exit;
-}
+# Get the absolute path of this executable
+SELF_DIRNAME="`dirname -- "$0"`"
+SELF_PATH="`cd -P -- "$SELF_DIRNAME" && pwd -P`/`basename -- "$0"`"
 
-switch ($argv[1]) {
-  case 'cc':
-  case 'clear-cache':
-    clearCache();
-    break;
-  case 'create-block':
-    $block = new Block();
-    $block->createBlock($argv[2], $argv[3]);
-    break;
-  case 'create-module':
-    $module = new Module();
-    $module->createModule($argv[2]);
-    break;
-  case 'create-route':
-    $route = new Route();
-    $route->createRoute($argv[2], $argv[3], $argv[4]);
-    break;
-  case 'help':
-    out('clear-cache (cc)');
-    out('create-block [block] [block to rewrite]');
-    out('create-module [module]');
-    out('create-route [module] [area] [frontname]');
-    out('help');
-    break;
-  default:
-    out('Use `mash help` for a list of commands.');
-    break;
-}
+# Resolve symlinks - this is the equivalent of "readlink -f", but also works with non-standard OS X readlink.
+while [ -h "$SELF_PATH" ]; do
+    # 1) cd to directory of the symlink
+    # 2) cd to the directory of where the symlink points
+    # 3) Get the pwd
+    # 4) Append the basename
+    DIR="`dirname -- "$SELF_PATH"`"
+    SYM="`readlink $SELF_PATH`"
+    SYM_DIRNAME="`dirname -- "$SYM"`"
+    SELF_PATH="`cd "$DIR" && cd "$SYM_DIRNAME" && pwd`/`basename -- "$SYM"`"
+done
+
+# Build the path to mash.php.
+SCRIPT_PATH="`dirname "$SELF_PATH"`/mash.php"
+case "`uname -a`" in
+  CYGWIN*)
+    SCRIPT_PATH="`cygpath -w -a -- "$SCRIPT_PATH"`" ;;
+esac
+
+# If not exported, try to determine and export the number of columns.
+# We do not want to run `tput cols` if $TERM is empty or "dumb", because
+# if we do, tput will output an undesirable error message to stderr.  If
+# we redirect stderr in any way, e.g. `tput cols 2>/dev/null`, then the
+# error message is suppressed, but tput cols becomes confused about the
+# terminal and prints out the default value (80).
+if [ -z $COLUMNS ] && [ -n "$TERM" ] && [ "$TERM" != dumb ] && [ ! -z "`which tput`" ] ; then
+  # Note to cygwin users: install the ncurses package to get tput command.
+  if COLUMNS="`tput cols`"; then
+    export COLUMNS
+  fi
+fi
+
+if [ ! -z "$MASH_PHP" ] ; then
+  # Use the MASH_PHP environment variable if it is available.
+  php="$MASH_PHP"
+else
+  # Default to using the php that we find on the PATH.
+  # Note that we need the full path to php here for Dreamhost, which behaves oddly.  See http://drupal.org/node/662926
+  php="`which php`"
+
+  # We check for a command line (cli) version of php, and if found use that.
+  php-cli -v >/dev/null 2>&1
+  if [ "$?" = 0 ] ; then
+    php="`which php-cli`"
+  fi
+
+  # On MSYSGIT, we need to use "php", not the full path to php
+  # See http://drupal.org/node/1659014 for an explanation of the comparison op.
+  if [ ! -z "$MSYSTEM" ] && [ "x${MSYSTEM}" != "x${MSYSTEM#MINGW}" ] ; then
+    php="php"
+  fi
+fi
+
+# Check to see if the user has provided a php.ini file or mash.ini file in any conf dir
+# Last found wins, so search in reverse priority order
+for conf_dir in "`dirname "$SELF_PATH"`" /etc/mash $HOME/.mash ; do
+  if [ -f "$conf_dir/php.ini" ] ; then
+    mash_php_ini=$conf_dir/php.ini
+  fi
+  if [ -f "$conf_dir/mash.ini" ] ; then
+    mash_php_override=$conf_dir/mash.ini
+  fi
+done
+
+# Add in the php file location and/or the php override variables as appropriate
+if [ "x$mash_php_ini" != "x" ] ; then
+  php_options="--php-ini $mash_php_ini"
+fi
+if [ "x$mash_php_override" != "x" ] ; then
+  php_options=`grep '^[a-z_A-Z0-9]\+ *=' $mash_php_override | sed -e 's|\([^ =]*\) *= *\(.*\)|\1="\2"|' -e 's| ||g' -e 's|^|-d |' | tr '\n\r' '  '`
+fi
+
+# Pass in the path to php so that mash knows which one
+# to use if it re-launches itself to run subcommands.  We
+# will also pass php options if any are defined.
+if [ -z "$php_options" ] ; then
+  exec "$php" $php_options "$SCRIPT_PATH" --php="$php" "$@"
+else
+  exec "$php" $php_options "$SCRIPT_PATH" --php="$php" --php-options="$php_options" "$@"
+fi
 
