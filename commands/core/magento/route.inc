@@ -1,7 +1,4 @@
 <?php
-include_once('helpers.php');
-include_once('clear_cache.php');
-include_once('Module.php');
 
 
 class Route extends Module 
@@ -19,17 +16,11 @@ class Route extends Module
   */
   public function createRoute($module = FALSE, $area = FALSE, $frontName = FALSE) {
     // Request missing parameters
-    if (!$module) {
-      $module = in('What is the fully qualified module name? Example: Package_Module.');
-    }
+
     $this->area = $area;
-    if (!$this->area) {
-      $this->area = in('What is the Magento Area? Options are "frontend", "admin", and "install"');
-    }
+
     $this->frontName = $frontName;
-    if (!$this->frontName) {
-      $this->frontName = in('What is the Front Name? The Front Name is often the lowercase module name.');
-    }
+
 
     // Validates parameters
     $components = explode('_', $module);
@@ -45,13 +36,13 @@ class Route extends Module
 
     // Verify the module already exists
     if (!$this->moduleExists()) {
-      error('There is no module "' . $this->module . '" under package "' . $this->package . '". Use `mash create-module ' . $module . '` to create one.');
+      mash_set_error('MASH_CREATE_ROUTE_ERROR', 'There is no module "' . $this->module . '" under package "' . $this->package . '". Use `mash create-module ' . $module . '` to create one.');
       return;
     }
 
     $this->createRouteConfig();
 
-    clearCache();
+    mash_cache_flush_all_magento_caches();
   }
 
   /**

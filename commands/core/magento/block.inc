@@ -1,7 +1,4 @@
 <?php
-include_once('helpers.php');
-include_once('clear_cache.php');
-include_once('Module.php');
 
 
 class Block extends Module 

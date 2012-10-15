@@ -29,6 +29,9 @@ function mash_module_create_module($name = NULL){
 
   }
 
+  mash_include_engine('magento', 'module');
+
+
   $module = new Module();
   $module->createModule($name);
 

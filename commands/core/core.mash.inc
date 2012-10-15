@@ -362,7 +362,10 @@ function core_mash_engine_type_info() {
 
 function core_mash_engine_magento() {
   $engines = array();
+  $engines['xml_format'] = array();
   $engines['module'] = array();
+  $engines['block'] = array();
+  $engines['route'] = array();
   return $engines;
 }
 
