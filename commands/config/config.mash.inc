@@ -105,8 +105,20 @@ function mash_config_remove_data($path, $scope = 'default', $scopeId = 0) {
 
 function mash_config_apply_data($ini_path){
 
+  if( !isset($ini_path)){
+
+    $ini_path = mash_get_context('MASH_SELECTED_MAGENTO_ROOT').'/app/etc/config.mash.ini';
+
+  }
+
+  if( !is_file($ini_path) || !is_readable($ini_path)){
+    mash_log('Cannot load ' . $ini_path, 'error' );
+    return FALSE;
+  }
+
   $config_ini = parse_ini_file($ini_path, TRUE);
 
+  mash_log('Loaded ' . $ini_path);
 
   $rows[] = array('scope','scope_id', 'path', 'value');
 
@@ -147,6 +159,8 @@ function mash_config_apply_data($ini_path){
   foreach($rows as $row){
     mash_config_set_data($row['path'], $row['value'], $row['scope'], $row['scope_id']);
   }
+
+  return TRUE;
 
 
 }
